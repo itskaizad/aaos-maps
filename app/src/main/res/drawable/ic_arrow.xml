@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <!-- Shadow -->
+    <path
+        android:fillColor="#800000"
+        android:pathData="M26,6 L42,38 L10,38 Z" />
+    <!-- Main red triangle -->
+    <path
+        android:fillColor="#FF0000"
+        android:pathData="M24,4 L40,36 L8,36 Z" />
+    <!-- Highlight -->
+    <path
+        android:fillColor="#FF6666"
+        android:pathData="M24,4 L32,20 L16,20 Z" />
+</vector>
