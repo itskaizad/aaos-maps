@@ -9,6 +9,7 @@ Uses [OpenStreetMap](https://www.openstreetmap.org/) tiles via [osmdroid](https:
 - Embeds directly in the AAOS car launcher maps panel (no fullscreen takeover)
 - Dark-themed OpenStreetMap tiles
 - Red arrow vehicle marker with live location updates
+- Search bar with coordinate and place name input
 - Handles `geo:` and `google.navigation:` intents
 - Supports mock location providers for testing/demo
 - Installs as a privileged system app with pre-granted permissions
