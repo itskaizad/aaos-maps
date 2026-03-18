@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
@@ -30,6 +31,8 @@ public class MapsActivity extends Activity implements LocationListener {
     private Marker vehicleMarker;
     private EditText searchBox;
     private ImageView searchAction;
+    private TextView batteryInfo;
+    private BatteryHelper batteryHelper;
     private static final GeoPoint DEFAULT_LOCATION = new GeoPoint(37.7749, -122.4194);
 
     private static final float[] DARK_MATRIX = {
@@ -43,11 +46,14 @@ public class MapsActivity extends Activity implements LocationListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Configuration.getInstance().setUserAgentValue(getPackageName());
+        Configuration.getInstance().setOsmdroidBasePath(getFilesDir());
+        Configuration.getInstance().setOsmdroidTileCache(new java.io.File(getCacheDir(), "osmdroid"));
         setContentView(R.layout.activity_maps);
 
         mapView = findViewById(R.id.map);
         mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setMultiTouchControls(true);
+        mapView.setUseDataConnection(true);
         mapView.getOverlayManager().getTilesOverlay()
                 .setColorFilter(new ColorMatrixColorFilter(DARK_MATRIX));
 
@@ -58,6 +64,7 @@ public class MapsActivity extends Activity implements LocationListener {
         });
 
         setupSearch();
+        setupBattery();
 
         GeoPoint intentLocation = parseGeoIntent();
         GeoPoint startPoint = intentLocation != null ? intentLocation : DEFAULT_LOCATION;
@@ -67,6 +74,23 @@ public class MapsActivity extends Activity implements LocationListener {
         mapView.getController().setCenter(startPoint);
 
         startLocationUpdates();
+    }
+
+    private void setupBattery() {
+        batteryInfo = findViewById(R.id.battery_info);
+        batteryHelper = new BatteryHelper(this);
+        updateBattery();
+        // Refresh every 60s
+        batteryInfo.postDelayed(new Runnable() {
+            @Override public void run() {
+                updateBattery();
+                batteryInfo.postDelayed(this, 60000);
+            }
+        }, 60000);
+    }
+
+    private void updateBattery() {
+        batteryInfo.setText(batteryHelper.getBatteryInfo());
     }
 
     private void setupSearch() {
