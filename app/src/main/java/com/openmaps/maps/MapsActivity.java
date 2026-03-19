@@ -54,6 +54,7 @@ public class MapsActivity extends Activity implements LocationListener {
     private static final long LOCATION_MIN_TIME_MS = 2000L;
     private static final float LOCATION_MIN_DISTANCE_M = 5f;
     private static final long BATTERY_REFRESH_INTERVAL_MS = 60_000L;
+    private static final long RECENTER_DELAY_MS = 10_000L;
 
     /** Desaturation matrix applied to map tiles for a dark automotive theme. */
     private static final float[] DARK_TILE_COLOR_MATRIX = {
@@ -73,6 +74,7 @@ public class MapsActivity extends Activity implements LocationListener {
     private ImageView searchSubmitButton;
     private TextView batteryIndicator;
     private BatteryHelper batteryHelper;
+    private final Runnable recenterRunnable = this::recenterIfNeeded;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,6 +90,14 @@ public class MapsActivity extends Activity implements LocationListener {
         initializeVehicleMarker(startPoint);
         mapView.getController().setZoom(INITIAL_ZOOM);
         mapView.getController().setCenter(startPoint);
+
+        // Apply UI offset once the view has dimensions
+        mapView.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override public void onGlobalLayout() {
+                mapView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                mapView.getController().setCenter(offsetForUI(vehicleMarker.getPosition()));
+            }
+        });
 
         requestLocationUpdates();
     }
@@ -115,7 +125,7 @@ public class MapsActivity extends Activity implements LocationListener {
                 + " [" + location.getProvider() + "]");
         mapView.post(() -> {
             vehicleMarker.setPosition(point);
-            mapView.getController().animateTo(point, TARGET_ZOOM, ZOOM_ANIMATION_MS);
+            mapView.getController().animateTo(offsetForUI(point), TARGET_ZOOM, ZOOM_ANIMATION_MS);
             mapView.invalidate();
         });
     }
@@ -139,6 +149,7 @@ public class MapsActivity extends Activity implements LocationListener {
         mapView.setOnTouchListener((v, event) -> {
             dismissKeyboard();
             v.performClick();
+            scheduleRecenter();
             return false;
         });
     }
@@ -224,7 +235,7 @@ public class MapsActivity extends Activity implements LocationListener {
 
     private void navigateTo(GeoPoint point, double zoom) {
         vehicleMarker.setPosition(point);
-        mapView.getController().animateTo(point, zoom, ZOOM_ANIMATION_MS);
+        mapView.getController().animateTo(offsetForUI(point), zoom, ZOOM_ANIMATION_MS);
         mapView.invalidate();
     }
 
@@ -273,6 +284,40 @@ public class MapsActivity extends Activity implements LocationListener {
             }
         } catch (NumberFormatException ignored) {}
         return null;
+    }
+
+    // ── Recenter ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Returns a point shifted north so the marker renders in the lower portion
+     * of the viewport, keeping it clear of the top UI overlays.
+     * Uses a fixed pixel offset converted to latitude at the current zoom.
+     */
+    private GeoPoint offsetForUI(GeoPoint point) {
+        // Shift center up by 25% of the view height in pixels
+        int offsetPx = mapView.getHeight() / 6;
+        if (offsetPx <= 0) return point;
+        org.osmdroid.api.IGeoPoint shifted = mapView.getProjection()
+                .fromPixels(mapView.getWidth() / 2, mapView.getHeight() / 2 - offsetPx);
+        org.osmdroid.api.IGeoPoint center = mapView.getProjection()
+                .fromPixels(mapView.getWidth() / 2, mapView.getHeight() / 2);
+        double latOffset = shifted.getLatitude() - center.getLatitude();
+        return new GeoPoint(point.getLatitude() + latOffset, point.getLongitude());
+    }
+
+    /** Resets the inactivity timer that recenters the map on the vehicle marker. */
+    private void scheduleRecenter() {
+        mapView.removeCallbacks(recenterRunnable);
+        mapView.postDelayed(recenterRunnable, RECENTER_DELAY_MS);
+    }
+
+    /** Recenters the map on the marker if it has drifted away. */
+    private void recenterIfNeeded() {
+        GeoPoint markerPos = vehicleMarker.getPosition();
+        GeoPoint center = (GeoPoint) mapView.getMapCenter();
+        if (markerPos.distanceToAsDouble(center) > 10) {
+            mapView.getController().animateTo(offsetForUI(markerPos), TARGET_ZOOM, ZOOM_ANIMATION_MS);
+        }
     }
 
     // ── Utilities ───────────────────────────────────────────────────────────────
