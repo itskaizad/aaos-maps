@@ -4,6 +4,10 @@ A lightweight maps app for Android Automotive OS that replaces the default "No m
 
 Uses [OpenStreetMap](https://www.openstreetmap.org/) tiles via [osmdroid](https://github.com/osmdroid/osmdroid) with a dark theme, and displays a vehicle location marker.
 
+## Screenshot
+
+![AAOS Maps in car launcher](screenshot.png)
+
 ## Features
 
 - Embeds directly in the AAOS car launcher maps panel (no fullscreen takeover)
