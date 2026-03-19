@@ -1,61 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:ignore="MergeRootFrame">
 
     <org.osmdroid.views.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Search bar - top left -->
+    <!-- Search bar -->
     <LinearLayout
         android:id="@+id/search_container"
         android:layout_width="420dp"
         android:layout_height="80dp"
         android:layout_gravity="top|start"
         android:layout_margin="16dp"
-        android:orientation="horizontal"
+        android:background="@drawable/search_bg"
         android:gravity="center_vertical"
-        android:paddingHorizontal="20dp"
-        android:background="@drawable/search_bg">
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp">
 
         <ImageView
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/ic_search"
+            android:layout_marginEnd="12dp"
             android:contentDescription="@string/search"
-            android:layout_marginEnd="12dp" />
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_search" />
 
         <EditText
-            android:id="@+id/search_box"
+            android:id="@+id/search_input"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:hint="@string/search_hint"
-            android:textColorHint="#88FFFFFF"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
             android:background="@null"
-            android:singleLine="true"
+            android:hint="@string/search_hint"
             android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
             android:inputType="text"
-            android:importantForAutofill="no" />
+            android:singleLine="true"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#88FFFFFF"
+            android:textSize="24sp" />
 
         <ImageView
-            android:id="@+id/search_action"
+            android:id="@+id/search_submit"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/ic_enter"
-            android:contentDescription="@string/search"
             android:layout_marginStart="8dp"
+            android:contentDescription="@string/search"
+            android:src="@drawable/ic_enter"
             android:visibility="gone" />
 
     </LinearLayout>
 
-    <!-- Battery bubble - top right -->
+    <!-- Battery indicator -->
     <TextView
-        android:id="@+id/battery_info"
+        android:id="@+id/battery_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"

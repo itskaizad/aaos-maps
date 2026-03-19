@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.aaos.maps'
+    namespace 'com.openmaps.maps'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.aaos.maps"
+        applicationId "com.openmaps.maps"
         minSdk 28
         targetSdk 34
         versionCode 1
@@ -18,6 +18,13 @@ android {
         release {
             minifyEnabled false
         }
+    }
+
+    lint {
+        // OldTargetApi: targeting 34 intentionally for AAOS compatibility
+        // InsecureBaseConfiguration: cleartext required for OSM tile loading
+        // ClickableViewAccessibility: performClick called but lint can't verify on third-party MapView
+        disable 'OldTargetApi', 'InsecureBaseConfiguration', 'ClickableViewAccessibility', 'GradleDependency'
     }
 }
 
