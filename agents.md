@@ -2,6 +2,16 @@
 
 AI agents working on this project MUST follow these instructions.
 
+## Agent Workflow Rules
+
+1. **Ask before committing or pushing.** Never run `git commit` or `git push` without explicit user approval.
+2. **Clean up failed attempts.** If a proposed solution doesn't work, revert all related changes before trying a different approach. Don't leave dead code, debug logging, or experimental workarounds in the codebase.
+3. **Follow best practices.** Write code as a senior engineer would — extract constants, use descriptive names, add annotations, document non-obvious decisions, and keep lint clean.
+4. **Build and verify before declaring done.** Always run `./gradlew assembleDebug` and confirm the build succeeds before telling the user a change is ready.
+5. **Test on device when possible.** If an adb device is connected, push the APK and verify the change works. Don't assume it works just because it compiles.
+6. **Keep changes minimal.** Only modify what's necessary to address the current task. Don't refactor unrelated code unless asked.
+7. **Read this file and README.md first.** Before making any changes, understand the project context, constraints, and known issues documented here.
+
 ## Project Context
 
 This is a lightweight maps app for Android Automotive OS (AAOS). It replaces the stock `CarMapsPlaceholder` app that shows a green "No maps application installed" message in the car launcher's maps panel.
