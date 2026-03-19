@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -56,9 +57,9 @@ public class MapsActivity extends Activity implements LocationListener {
 
     /** Desaturation matrix applied to map tiles for a dark automotive theme. */
     private static final float[] DARK_TILE_COLOR_MATRIX = {
-        0.3f, 0.3f, 0.3f, 0, 0,
-        0.3f, 0.3f, 0.3f, 0, 0,
-        0.3f, 0.3f, 0.3f, 0, 0,
+        0.2f, 0.2f, 0.2f, 0, 0,
+        0.2f, 0.2f, 0.2f, 0, 0,
+        0.2f, 0.2f, 0.2f, 0, 0,
         0,    0,    0,    1, 0
     };
 
@@ -144,6 +145,7 @@ public class MapsActivity extends Activity implements LocationListener {
 
     private void initializeSearchBar() {
         searchInput = findViewById(R.id.search_input);
+        searchInput.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC));
         searchSubmitButton = findViewById(R.id.search_submit);
 
         searchInput.addTextChangedListener(new TextWatcher() {
@@ -152,6 +154,8 @@ public class MapsActivity extends Activity implements LocationListener {
             @Override
             public void afterTextChanged(Editable s) {
                 searchSubmitButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                searchInput.setTypeface(Typeface.defaultFromStyle(
+                        s.length() > 0 ? Typeface.NORMAL : Typeface.ITALIC));
             }
         });
 
